@@ -1,6 +1,12 @@
 # PyJail
 
-PyJail is a Python module designed to provide a secure environment for executing untrusted code. To execute a function without access to your system, call it through PyJail as shown below.
+PyJail is a Python module designed to provide a secure environment for executing untrusted code. PyJail is available on [PyPI](https://pypi.org/project/PyJail/).
+
+```bash
+pip install PyJail
+```
+
+To execute a function without access to your system, call it through PyJail as shown below.
 
 ```python
 from pyjail import Jail
