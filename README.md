@@ -10,3 +10,6 @@ with Jail() as jail:
 ```
 
 The `Jail` class constructor has the optional parameters `path=os.path.join(os.getcwd(), "jail")` and `clear_before_create=True`. The `path` parameter specifies the directory where the jail will be created (note that this is a transient directory that will be deleted when the `Jail` object is destroyed) and the `clear_before_create` parameter specifies whether the jail directory should be cleared before creation (if it already exists).
+
+> [!NOTE]
+> You must run your python script as root to create a jail.
