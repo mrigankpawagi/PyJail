@@ -3,6 +3,7 @@ import shutil
 import pickle
 import pwd
 import random
+import signal
 
 class Jail:
     """
@@ -25,9 +26,16 @@ class Jail:
         """
         os.system(f"sudo useradd -M -N -r -s /bin/false {self.jail_user}")
 
-    def execute(self, func, *args, **kwargs):
+    def execute(self, func, args: list, kwargs: dict, timeout: int = None):
         """
         Execute a function securely inside the chroot jail.
+        
+        func: The function to execute.
+        args: List of arguments to pass to the function.
+        kwargs: Dictionary of keyword arguments to pass to the function.
+        timeout: Timeout for the function execution in seconds (optional). A TimeoutError is raised if the function takes longer than this.
+        
+        Returns the return value of the function.
         """
         # pipe for communication between parent and child processes
         read_pipe, write_pipe = os.pipe()
@@ -61,9 +69,19 @@ class Jail:
             _run_in_jail()
             quit()
         else:
+            # implement timeout
+            if timeout:
+                def _timeout_handler(signum, frame):
+                    os.kill(pid, signal.SIGKILL)
+                    raise TimeoutError("Function execution timed out.")
+                
+                signal.signal(signal.SIGALRM, _timeout_handler)
+                signal.alarm(timeout)
+
             os.waitpid(pid, 0)
             os.close(write_pipe)
             os.close(write_pipe_err)
+            signal.alarm(0)  # disable the alarm if the function returns before the timeout
             
             # check if there was an exception in the child process
             err = open(read_pipe_err, "rb").read()
