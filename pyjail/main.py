@@ -86,7 +86,6 @@ class Jail:
             # check if there was an exception in the child process
             err = open(read_pipe_err, "rb").read()
             if err:
-                print("An exception occurred in the child process.")
                 raise pickle.loads(err)
             else:
                 return_value = pickle.loads(open(read_pipe, "rb").read())
