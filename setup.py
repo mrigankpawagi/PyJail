@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='PyJail',
-    version='0.1.3',
+    version='0.1.4',
     author='Mrigank Pawagi',
     author_email='mrigankpawagi@gmail.com',
     description='A Python module for sandboxing code execution.',

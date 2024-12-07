@@ -10,11 +10,13 @@ class Jail:
     This class creates and manages a chroot jail.
     """
     
-    def __init__(self, path=os.path.join(os.getcwd(), "jail"), clear_before_create=False):
+    def __init__(self, path=os.path.join(os.getcwd(), "jail"), clear_before_create=False, clear_after_destroy=True):
         self.path = path
         self.jail_user = "nobody-{}".format(str(random.random())[2:])
+        self.clear_before_create = clear_before_create
+        self.clear_after_destroy = clear_after_destroy
 
-        if clear_before_create:
+        if self.clear_before_create:
             shutil.rmtree(self.path, ignore_errors=True)
 
         self.create_nobody_user()
@@ -26,7 +28,7 @@ class Jail:
         """
         os.system(f"sudo useradd -M -N -r -s /bin/false {self.jail_user}")
 
-    def execute(self, func, args: list, kwargs: dict, timeout: int = None):
+    def execute(self, func, args: list = list(), kwargs: dict = dict(), timeout: int = None):
         """
         Execute a function securely inside the chroot jail.
         
@@ -95,7 +97,8 @@ class Jail:
         """
         Destroy the chroot jail and associated resources.
         """
-        shutil.rmtree(self.path, ignore_errors=True)
+        if self.clear_after_destroy:
+            shutil.rmtree(self.path, ignore_errors=True)        
         os.system(f"sudo userdel {self.jail_user}")
 
     def __enter__(self):
